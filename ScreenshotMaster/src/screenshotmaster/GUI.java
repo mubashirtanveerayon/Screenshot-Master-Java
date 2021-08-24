@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Frame;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
 /**
@@ -61,7 +62,13 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
         customFrame.setCursor(new Cursor(Cursor.MOVE_CURSOR));
         customFrame.setBounds(300, 150, 300, 300);
         customFrame.setOpacity(0.7f);
-
+        customFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        JLabel label = new JLabel();
+        label.setBorder(BorderFactory.createLineBorder(Color.red));
+        
+        customFrame.add(label);
+        
         resizer.registerComponent(customFrame);
 
         customFrame.addMouseListener(this);
