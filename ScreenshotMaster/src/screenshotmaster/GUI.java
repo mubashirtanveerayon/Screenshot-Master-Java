@@ -22,6 +22,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Color;
+import java.awt.Frame;
 import javax.swing.JOptionPane;
 
 /**
@@ -39,8 +40,14 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
 
     public ComponentResizer resizer;
 
+    public static int total;
+    public static int done;
+
+    Loader loader;
+
     public GUI() {
         initComponents();
+
         fc = new JFileChooser(".");
         custom = customRadioButton.isSelected();
         ButtonGroup btngrp = new ButtonGroup();
@@ -59,6 +66,42 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
 
         customFrame.addMouseListener(this);
         customFrame.addMouseMotionListener(this);
+
+        loader = new Loader();
+    }
+
+    public Thread capture(int x, int y, int w, int h, int total, String path) {
+        Thread thread = new Thread() {
+            public void run() {
+                try {
+                    for (int i = 1; i <= total&&!loader.stop; i++) {
+                        BufferedImage ss = new Robot().createScreenCapture(new Rectangle(x, y, w, h));
+                        saveFile(ss, path + "screenshot" + i + ".png");
+                        done=i;
+                    }
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+                loader.stop=true;
+                setVisible();
+            }
+        };
+        return thread;
+    }
+    
+    public void setVisible(){
+        setVisible(true);
+        if (customRadioButton.isSelected()) {
+            customFrame.setVisible(true);
+        }
+    }
+
+    public Thread capture(int total, String path) {
+        int x = 0;
+        int y = 0;
+        int w = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        int h = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        return capture(x, y, w, h, total, path);
     }
 
     public void saveFile(BufferedImage bi) {
@@ -104,6 +147,7 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Screenshot Master");
         setResizable(false);
 
         fullScreenRadioButton.setSelected(true);
@@ -148,13 +192,8 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(conCaptureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(45, 45, 45)
-                                .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(45, 45, 45)
+                        .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -165,6 +204,10 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
                                 .addComponent(customRadioButton))
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(conCaptureButton)
+                .addGap(18, 18, 18))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,51 +262,45 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
     }//GEN-LAST:event_fullScreenRadioButtonActionPerformed
 
     private void conCaptureButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_conCaptureButtonActionPerformed
-        customFrame.setVisible(false);
-        this.setVisible(false);
-        int total = 0;
         fc.setDialogTitle("Save Path");
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int response = fc.showSaveDialog(null);
         String path = "";
         if (response == JFileChooser.APPROVE_OPTION) {
             path = fc.getSelectedFile().getPath() + File.separator;
-
+            customFrame.setVisible(false);
+            setVisible(false);
+            loader.stop=false;
             if (new File(path).list().length == 0) {
                 String r = JOptionPane.showInputDialog(null, "Enter the number of total frames :");
                 try {
                     total = Integer.parseInt(r);
                     Thread.sleep(200);
+                    Thread thread = new Thread(loader);
+                    thread.start();
                     if (customRadioButton.isSelected()) {
                         int lx = customFrame.getLocation().x;
                         int ly = customFrame.getLocation().y;
                         int w = customFrame.getWidth();
                         int h = customFrame.getHeight();
-
-                        for (int i = 0; i < total; i++) {
-                            BufferedImage ss = new Robot().createScreenCapture(new Rectangle(lx, ly, w, h));
-                            saveFile(ss, path + "screenshot" + i + ".png");
-                        }
-                        customFrame.setVisible(true);
+                        Thread thread1 = capture(lx,ly,w,h,total,path);
+                        thread1.start();
                     } else {
-                        for (int i = 0; i < total; i++) {
-                            BufferedImage ss = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-                            saveFile(ss, path + "screenshot" + i + ".png");
-                        }
+                        Thread thread1 = capture(total,path);
+                        thread1.start();
                     }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Digits only!", "Error", JOptionPane.ERROR_MESSAGE);
+                    setVisible();
                 } catch (Exception ex) {
                     System.out.println(ex);
+                    setVisible();
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "You need to choose an emty directory.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            if (customRadioButton.isSelected()) {
-                customFrame.setVisible(true);
+                JOptionPane.showMessageDialog(null, "You need to choose an empty directory.", "Error", JOptionPane.ERROR_MESSAGE);
+                setVisible();
             }
         }
-        this.setVisible(true);
     }//GEN-LAST:event_conCaptureButtonActionPerformed
 
     /**
