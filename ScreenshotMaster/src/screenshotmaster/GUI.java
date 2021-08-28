@@ -32,7 +32,6 @@ import javax.swing.JOptionPane;
  */
 public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotionListener {
 
-    public boolean custom;
     public JFileChooser fc;
     public JFrame customFrame;
 
@@ -50,7 +49,6 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
         initComponents();
 
         fc = new JFileChooser(".");
-        custom = customRadioButton.isSelected();
         ButtonGroup btngrp = new ButtonGroup();
         btngrp.add(fullScreenRadioButton);
         btngrp.add(customRadioButton);
@@ -152,6 +150,7 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
         captureButton = new javax.swing.JButton();
         conCaptureButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        alwaysOnTopCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Screenshot Master");
@@ -192,29 +191,37 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Screenshot Master");
 
+        alwaysOnTopCheckBox.setText("Always On Top");
+        alwaysOnTopCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                alwaysOnTopCheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(conCaptureButton)
+                .addGap(18, 18, 18))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(fullScreenRadioButton)
                                 .addGap(18, 18, 18)
                                 .addComponent(customRadioButton))
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(conCaptureButton)
-                .addGap(18, 18, 18))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(alwaysOnTopCheckBox)
+                            .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(44, 44, 44))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -225,11 +232,13 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(customRadioButton)
                     .addComponent(fullScreenRadioButton))
-                .addGap(18, 18, 18)
-                .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(alwaysOnTopCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(captureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(conCaptureButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -310,6 +319,11 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
         }
     }//GEN-LAST:event_conCaptureButtonActionPerformed
 
+    private void alwaysOnTopCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alwaysOnTopCheckBoxActionPerformed
+       this.setAlwaysOnTop(alwaysOnTopCheckBox.isSelected());
+       customFrame.setAlwaysOnTop(alwaysOnTopCheckBox.isSelected());
+    }//GEN-LAST:event_alwaysOnTopCheckBoxActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -346,6 +360,7 @@ public class GUI extends javax.swing.JFrame implements MouseListener, MouseMotio
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox alwaysOnTopCheckBox;
     private javax.swing.JButton captureButton;
     private javax.swing.JButton conCaptureButton;
     private javax.swing.JRadioButton customRadioButton;
